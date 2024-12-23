@@ -28,6 +28,7 @@ function CreateTodo() {
   const handleRemoveSkill = (skillToRemove) => {
     setSkill(skill.filter((s) => s !== skillToRemove));
   };
+
   return (
     <div>
       <div className="text-left">
@@ -97,8 +98,8 @@ function CreateTodo() {
           className="bg-[#ffff] w-1/3 border ml-24 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
         >
           <option selected>search keywords</option>
-          <option value="net">.Net </option>
-          <option value="cplus">.c++ </option>
+          <option value=".net">.Net </option>
+          <option value="c++">c++ </option>
           <option value="java"> java </option>
           <option value="php"> php </option>
           <option value="figma"> figma </option>
