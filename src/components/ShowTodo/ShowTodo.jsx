@@ -4,68 +4,44 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { VscEdit } from "react-icons/vsc";
 import { removeTodo, updateTodo } from "../../redux/slices/TodoSlices";
+import { calculateAge, getSkillBackground } from "../../utils/Showtodoutil";
 
 function ShowTodo() {
-  const todos = useSelector((state) => state.todo.todos);
+  const todos = useSelector((state) => state.todo.todos); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTodo, setEditedTodo] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-
-  const calculateAge = (birthDate) => {
-    if (!birthDate) return "N/A";
-    const birth = new Date(birthDate);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
-  const getSkillBackground = (index) => {
-    const colors = [
-      "bg-[#E7FFF5] text-[#009E20]",
-      "bg-[#EFF8FF] text-[#175CD3]",
-      "bg-[#F9F5FF] text-[#C64143]",
-    ];
-    return colors[index % colors.length];
-  };
-
   const handleDelete = (id) => {
     console.log("Deleting todo with id:", id);
-    dispatch(removeTodo(id));
+    if (id) {
+      dispatch(removeTodo(id));
+    } else {
+      console.error("Todo id is missing");
+    }
   };
 
   const handleEdit = (todo) => {
-    setIsEditing(true);
-    setEditedTodo(todo);
+    navigate(`/edit-todo/${todo.id}`);
   };
 
-  const handleSaveEdit = () => {
-    dispatch(updateTodo({ id: editedTodo.id, updatedTodo: editedTodo }));
-    setIsEditing(false);
-  };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-  };
-
-  const handleback = () => {
+  const handleBack = () => {
     navigate("/");
   };
+
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
+
   const filteredTodos = todos.filter((todo) => {
-    const fullName =
-      `${todo.name.firstName} ${todo.name.lastName}`.toLowerCase();
-    return fullName.includes(searchQuery.toLowerCase());
+    if (todo && todo.name) {
+      const fullName =
+        `${todo.name.firstName} ${todo.name.lastName}`.toLowerCase();
+      return fullName.includes(searchQuery.toLowerCase());
+    }
+    return false;
   });
 
   return (
@@ -81,7 +57,7 @@ function ShowTodo() {
             onChange={handleSearchChange}
           />
           <button
-            onClick={handleback}
+            onClick={handleBack}
             className="border w-32 bg-[#C60026] text-[#ffff] p-2 rounded-lg"
           >
             Create
@@ -128,7 +104,7 @@ function ShowTodo() {
                 <td className="px-4 py-2 text-[#181D27]">
                   {calculateAge(todo.birthDate)}
                 </td>
-                <td className="px-4 py-2 ">
+                <td className="px-4 py-2">
                   <div className="flex gap-2 justify-center">
                     <button
                       className="text-red-500"
@@ -148,73 +124,6 @@ function ShowTodo() {
             ))}
           </tbody>
         </table>
-      )}
-
-      {isEditing && (
-        <div className="mt-6 border p-4 rounded-lg bg-[#F9F9F9]">
-          <h2 className="text-lg font-bold mb-4">Edit Todo</h2>
-          <div className="flex flex-col">
-            <label className="mb-2 font-medium">First Name</label>
-            <input
-              type="text"
-              value={editedTodo.name?.firstName || ""}
-              onChange={(e) =>
-                setEditedTodo({
-                  ...editedTodo,
-                  name: { ...editedTodo.name, firstName: e.target.value },
-                })
-              }
-              className="border p-2 mb-4 rounded-lg"
-            />
-            <label className="mb-2 font-medium">Last Name</label>
-            <input
-              type="text"
-              value={editedTodo.name?.lastName || ""}
-              onChange={(e) =>
-                setEditedTodo({
-                  ...editedTodo,
-                  name: { ...editedTodo.name, lastName: e.target.value },
-                })
-              }
-              className="border p-2 mb-4 rounded-lg"
-            />
-            <label className="mb-2 font-medium">Role</label>
-            <input
-              type="text"
-              value={editedTodo.role || ""}
-              onChange={(e) =>
-                setEditedTodo({ ...editedTodo, role: e.target.value })
-              }
-              className="border p-2 mb-4 rounded-lg"
-            />
-            <label className="mb-2 font-medium">Skills</label>
-            <input
-              type="text"
-              value={editedTodo.skill?.join(", ") || ""}
-              onChange={(e) =>
-                setEditedTodo({
-                  ...editedTodo,
-                  skill: e.target.value.split(", "),
-                })
-              }
-              className="border p-2 mb-4 rounded-lg"
-            />
-            <div className="flex justify-end">
-              <button
-                onClick={handleCancelEdit}
-                className="bg-gray-300 text-black p-2 rounded-lg mr-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveEdit}
-                className="bg-green-500 text-white p-2 rounded-lg"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );

@@ -1,3 +1,4 @@
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const loadFromLocalStorage = () => {
@@ -15,6 +16,10 @@ const todoSlice = createSlice({
     todos: loadFromLocalStorage(),
   },
   reducers: {
+    setTodos: (state, action) => {
+      state.todos = action.payload;
+      saveToLocalStorage(state.todos); 
+    },
     addTodo: (state, action) => {
       state.todos.push(action.payload);
       saveToLocalStorage(state.todos);
@@ -24,6 +29,11 @@ const todoSlice = createSlice({
       state.todos = state.todos.filter((todo) => todo.id !== idToRemove);
       saveToLocalStorage(state.todos);
     },
+    // removeTodo: (state, action) => {
+
+    //   state.todos = state.todos.filter(todo => todo && todo.id !== action.payload);
+    // },
+    
     updateTodo: (state, action) => {
       const { id, updatedTodo } = action.payload;
       const index = state.todos.findIndex((todo) => todo.id === id);
@@ -32,6 +42,7 @@ const todoSlice = createSlice({
         saveToLocalStorage(state.todos);
       }
     },
+
   },
 });
 
